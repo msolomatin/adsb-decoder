@@ -1,7 +1,8 @@
+"""ADS-B Decode demo."""
+
 import socket
-import adsb
-import helper
 import os
+import adsb
 import config
 
 d = config.read_config()
@@ -17,15 +18,12 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 
 os.system('cls' if os.name == 'nt' else 'clear')
-print '{:15s} {:15s}'.format('MODE-S CODE', 'FLIGHT')
+#print '{:15s} {:15s} {:15s} {:15s} {:15s}'.format('MODE-S CODE', 'FLIGHT', 'LAT', 'LON', 'ALT')
 while True:
-  raw_data = s.recv(BUFFER_SIZE)
-  datahex = raw_data.encode('hex')
-  datahex = adsb.remove_preamble(datahex)
-  databin = helper.hex2bin(datahex)
-  if helper.bin2int(databin[0:5]) == 17 and (1 <= helper.bin2int(databin[32:36]) <= 4):
-    print '{:15s} {:15s}'.format(adsb.icao_aircraft_address(databin), adsb.flight_number(databin))
+    raw_data = s.recv(BUFFER_SIZE)
+    aircraft_data = adsb.aircraft_data(raw_data)
 
-  received += len(raw_data)
+    if bool(aircraft_data):
+        print aircraft_data
 
 s.close()
