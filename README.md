@@ -8,6 +8,7 @@ Here is the quick demo:
 <img src="https://asciinema.org/a/dnt24hho7tryn7759gvja8gwk.png" width="600"/>
 </a>
 ## Alpha
-Current library is at the early stage of development.
+Library is at the early stage of development. It's able to decode MODE-S code,
+flight number and altitude.
 ## Requirements
 Python 2.7
