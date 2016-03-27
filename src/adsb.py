@@ -7,7 +7,8 @@ import helper
   latitude,
   longitude,
   altitude,
-  velocity
+  velocity,
+  binary
 }
 '''
 def aircraft_data(raw_message):

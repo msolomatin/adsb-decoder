@@ -1,7 +1,10 @@
 """ADS-B Decode demo."""
 
+import sys
+sys.path.append("src")
 import socket
 import os
+
 import adsb
 import config
 
