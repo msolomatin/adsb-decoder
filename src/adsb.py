@@ -53,8 +53,8 @@ def _velocity(binary_message):
 
     return {
         "mode-s": _icao_aircraft_address(binary_message),
-        "velocity": velocity,
-        "direction": direction
+        "velocity": int(velocity),
+        "direction": int(direction)
     }
 
 def _aircraft_identification(binary_message):
