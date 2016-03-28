@@ -1,5 +1,7 @@
 import helper
-
+from math import sqrt
+from math import atan2
+from math import pi
 '''
 {
   mode-s,
@@ -29,7 +31,31 @@ def _relevant_data(binary_message):
         data = _aircraft_identification(binary_message)
     if 9 <= type_code <= 18:
         data = _airbone_details(binary_message)
+    if type_code == 19:
+        data = _velocity(binary_message)
     return data
+
+def _velocity(binary_message):
+    subtype = helper.bin2int(binary_message[37:40])
+    velocity = "N/A"
+    direction = "N/A"
+    if subtype == 1:
+        east_west_velocity = helper.bin2int(binary_message[46:56])
+        east_west_velocity_sign = helper.bin2int(binary_message[45])
+        north_south_velocity = helper.bin2int(binary_message[57:67])
+        north_south_velocity_sign = helper.bin2int(binary_message[56])
+        velocity_east_west = -1 * (east_west_velocity - 1) if east_west_velocity_sign == 1 else east_west_velocity - 1
+        velocity_north_south = -1 * (north_south_velocity - 1) if north_south_velocity_sign == 1 else north_south_velocity - 1
+        velocity = sqrt(velocity_east_west * velocity_east_west + velocity_north_south * velocity_north_south)
+        direction = atan2(velocity_east_west, velocity_north_south) * 1.0 * 180 / pi
+        if direction < 0:
+            direction += 360
+
+    return {
+        "mode-s": _icao_aircraft_address(binary_message),
+        "velocity": velocity,
+        "direction": direction
+    }
 
 def _aircraft_identification(binary_message):
     return {
@@ -76,14 +102,11 @@ def remove_preamble(raw_message):
 def flight_number(binary_message):
     charset = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ#####################0123456789######'
     number = ''
-    number += charset[helper.bin2int(binary_message[40:46])]
-    number += charset[helper.bin2int(binary_message[46:52])]
-    number += charset[helper.bin2int(binary_message[52:58])]
-    number += charset[helper.bin2int(binary_message[58:64])]
-    number += charset[helper.bin2int(binary_message[64:70])]
-    number += charset[helper.bin2int(binary_message[70:76])]
-    number += charset[helper.bin2int(binary_message[76:82])]
-    number += charset[helper.bin2int(binary_message[82:88])]
+    start = 40
+    offset = 6
+    while start <= 82:
+        number += charset[helper.bin2int(binary_message[start:(start + offset)])]
+        start += offset
     return number.translate(None, '#')
 '''
 def position(binary_message):
